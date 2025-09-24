@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { PlanUpgradeModal } from '@/components/forms/plan-upgrade-modal'
 import { green, blue, red, amber, slate ,gray,indigo, blackA, mint, yellow, plum} from '@radix-ui/colors'
 import styled, { ThemeProvider } from 'styled-components'
 import { Progress, ProgressIndicator, Indicator } from '@radix-ui/react-progress'
@@ -72,12 +73,16 @@ export function BillingComponent() {
     const usagePercentage = (billingData.usage.monitors / billingData.usage.monitors_limit) * 100
     const checksUsagePercentage = (billingData.usage.checks_this_month / billingData.usage.checks_limit) * 100
   
-    const handleUpgrade = () => {
-      addToast({
-        title: 'Upgrade initiated',
-        description: 'Redirecting to upgrade page...',
-        variant: 'success'
-      })
+    const handleUpgrade = (planKey?: string) => {
+      if (planKey) {
+        setSelectedUpgradePlan(planKey)
+      } else {
+        // Default to next tier up
+        const currentPlanIndex = Object.keys(SUBSCRIPTION_TIERS).indexOf(billingData.current_plan)
+        const nextPlan = Object.keys(SUBSCRIPTION_TIERS)[currentPlanIndex + 1]
+        setSelectedUpgradePlan(nextPlan || Object.keys(SUBSCRIPTION_TIERS)[1])
+      }
+      setIsUpgradeModalOpen(true)
     }
   
     const handleManageBilling = () => {
@@ -116,6 +121,10 @@ export function BillingComponent() {
     const [country, setCountry] = useState('United States')
     const [isLoading, setIsLoading] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({})
+
+    // Plan upgrade modal state
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
+    const [selectedUpgradePlan, setSelectedUpgradePlan] = useState('')
 
     // Validation functions
     const validateEmail = (email: string) => {
@@ -182,7 +191,7 @@ export function BillingComponent() {
             addToast({
                 title: 'Update failed',
                 description: 'There was an error updating your billing information. Please try again.',
-                variant: 'error'
+                variant: 'destructive'
             })
         } finally {
             setIsLoading(false)
@@ -460,7 +469,7 @@ return (
                 </DialogPortal>
             </Dialog>
             
-            <UpgradeButton onClick={handleUpgrade} style={{ backgroundColor: theme.colors.plum6, color: theme.colors.plum12 }}>
+            <UpgradeButton onClick={() => handleUpgrade()} style={{ backgroundColor: theme.colors.plum6, color: theme.colors.plum12 }}>
               <TrendingUp className="h-4 w-4" />
               Upgrade Plan
             </UpgradeButton>
@@ -692,7 +701,7 @@ return (
                       variant={key === billingData.current_plan ? 'outline' : 'default'}
                       className="w-full"
                       disabled={key === billingData.current_plan}
-                      onClick={key !== billingData.current_plan ? handleUpgrade : undefined}
+                      onClick={key !== billingData.current_plan ? () => handleUpgrade(key) : undefined}
                     >
                       {key === billingData.current_plan ? 'Current Plan' : 'Upgrade'}
                     </Button>
@@ -702,6 +711,15 @@ return (
             </div>
           </CardContent>
         </Card>
+
+        {/* Plan Upgrade Modal */}
+        <PlanUpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+          currentPlan={billingData.current_plan}
+          selectedPlan={selectedUpgradePlan}
+          onPlanSelect={setSelectedUpgradePlan}
+        />
       </div>
 );
 }
