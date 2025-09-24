@@ -44,25 +44,39 @@ const BackButton = styled(Button)`
   color: ${theme.colors.gray12} !important;
 }`
 
+interface BillingData {
+    billingName: string
+    email: string
+    cardNumber: string
+    expiration: string
+    cvc: string
+    streetAddress: string
+    city: string
+    state: string
+    zipCode: string
+    country: string
+}
+
 interface PlanUpgradeModalProps {
     isOpen: boolean
     onClose: () => void
     currentPlan: string
     selectedPlan: string
     onPlanSelect: (plan: string) => void
+    billingData?: BillingData
 }
 
-export function PlanUpgradeModal({ isOpen, onClose, currentPlan, selectedPlan, onPlanSelect }: PlanUpgradeModalProps) {
+export function PlanUpgradeModal({ isOpen, onClose, currentPlan, selectedPlan, onPlanSelect, billingData }: PlanUpgradeModalProps) {
     const { addToast } = useToast()
     
-    // Form state
-    const [email, setEmail] = useState('carsonspriggs6@gmail.com')
-    const [cardNumber, setCardNumber] = useState('')
-    const [expiration, setExpiration] = useState('')
-    const [cvc, setCvc] = useState('')
-    const [cardholderName, setCardholderName] = useState('')
-    const [country, setCountry] = useState('Canada')
-    const [address, setAddress] = useState('')
+    // Form state - initialize with billing data if available
+    const [email, setEmail] = useState(billingData?.email || 'carsonspriggs6@gmail.com')
+    const [cardNumber, setCardNumber] = useState(billingData?.cardNumber || '')
+    const [expiration, setExpiration] = useState(billingData?.expiration || '')
+    const [cvc, setCvc] = useState(billingData?.cvc || '')
+    const [cardholderName, setCardholderName] = useState(billingData?.billingName || '')
+    const [country, setCountry] = useState(billingData?.country || 'Canada')
+    const [address, setAddress] = useState(billingData?.streetAddress || '')
     const [saveInfo, setSaveInfo] = useState(false)
     const [isBusiness, setIsBusiness] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -85,6 +99,19 @@ export function PlanUpgradeModal({ isOpen, onClose, currentPlan, selectedPlan, o
             }
         }
     }, [isOpen, selectedPlan, currentPlan, onPlanSelect])
+
+    // Update form fields when billing data changes
+    useEffect(() => {
+        if (billingData) {
+            setEmail(billingData.email || '')
+            setCardNumber(billingData.cardNumber || '')
+            setExpiration(billingData.expiration || '')
+            setCvc(billingData.cvc || '')
+            setCardholderName(billingData.billingName || '')
+            setCountry(billingData.country || 'Canada')
+            setAddress(billingData.streetAddress || '')
+        }
+    }, [billingData])
 
     // Validation functions
     const validateEmail = (email: string) => {
