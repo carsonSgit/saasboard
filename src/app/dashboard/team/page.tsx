@@ -1,17 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { mockTeamMembers } from '@/lib/mock-data'
 import { useToast } from '@/components/ui/toast-provider'
 import { 
   Users, 
   UserPlus, 
   Mail, 
-  MoreVertical, 
   Crown, 
   Shield, 
   Eye,
@@ -19,8 +17,16 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react'
+import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogTrigger, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogOverlay, AlertDialogPortal } from '@radix-ui/react-alert-dialog'
+
+function init(){
+  document.documentElement.style.scrollbarGutter = 'auto'
+}
 
 export default function TeamPage() {
+  useEffect(() => {
+    init()
+  }, [])
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
   const [isInviting, setIsInviting] = useState(false)
   const { addToast } = useToast()
@@ -81,14 +87,12 @@ export default function TeamPage() {
   }
 
   const handleRemoveMember = (memberId: string, memberName: string) => {
-    if (confirm(`Are you sure you want to remove ${memberName} from the team?`)) {
       setTeamMembers(prev => prev.filter(member => member.id !== memberId))
       addToast({
         title: 'Member removed',
         description: `${memberName} has been removed from the team`,
         variant: 'success'
       })
-    }
   }
 
   const handleResendInvitation = (memberName: string) => {
@@ -208,14 +212,41 @@ export default function TeamPage() {
                         </Button>
                       )}
                       {member.role !== 'Owner' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveMember(member.id, member.name)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogPortal>
+                            <AlertDialogOverlay className="fixed inset-0 bg-black/50" />
+                            <AlertDialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 sm:rounded-lg">
+                              <AlertDialogTitle className="text-lg font-semibold">
+                                Remove Member
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-gray-600">
+                                Are you sure you want to remove {member.name} from the team? This action cannot be undone.
+                              </AlertDialogDescription>
+                              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+                                <AlertDialogCancel asChild>
+                                  <Button variant="outline">Cancel</Button>
+                                </AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                  <Button 
+                                    variant="destructive" 
+                                    onClick={() => handleRemoveMember(member.id, member.name)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </AlertDialogAction>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialogPortal>
+                        </AlertDialog>
                       )}
                     </div>
                   </div>

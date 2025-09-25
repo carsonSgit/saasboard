@@ -47,7 +47,15 @@ const ExportButton = styled(Button)`
   color: ${theme.colors.gray12} !important;
 }`
 
-export function BillingComponent() {
+function init(){
+  document.documentElement.style.scrollbarGutter = 'stable'
+}
+
+export function BillingComponent() {  
+    useEffect(() => {
+        init()
+    }, [])
+
     const [billingData] = useState(mockBillingData)
     const { addToast } = useToast()
   
@@ -221,7 +229,7 @@ return (
           <TabsContent value="overview" className="space-y-6 pb-6">
 
             {/* Usage Statistics */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2" >
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
