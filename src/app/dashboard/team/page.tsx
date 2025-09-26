@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { mockTeamMembers } from '@/lib/mock-data'
 import { useToast } from '@/components/ui/toast-provider'
+import { Input } from '@/components/ui/input'
 import { 
   Users, 
   UserPlus, 
@@ -15,10 +16,17 @@ import {
   Eye,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Calendar,
+  Search,
+  LogOut
 } from 'lucide-react'
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogTrigger, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogOverlay, AlertDialogPortal } from '@radix-ui/react-alert-dialog'
-
+import styled from 'styled-components'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import { Toast } from '@/components/ui/toast'
+import { ToastDescription } from '@radix-ui/react-toast'
 function init(){
   document.documentElement.style.scrollbarGutter = 'auto'
 }
@@ -27,10 +35,14 @@ export default function TeamPage() {
   useEffect(() => {
     init()
   }, [])
+
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
   const [isInviting, setIsInviting] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
   const { addToast } = useToast()
-
+  const [searchTerm, setSearchTerm] = useState('')
+  const [role, setRole] = useState('')
+  const [email, setEmail] = useState('')
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'Owner':
@@ -73,6 +85,16 @@ export default function TeamPage() {
     return lastActiveDate.toLocaleDateString()
   }
 
+  const handleLeaveTeam = () => {
+    setIsLeaving(true)
+    addToast({
+      title: 'Team left',
+      description: 'You have left the team',
+      variant: 'success'
+    })
+    setIsLeaving(false)
+  }
+
   const handleInviteMember = () => {
     setIsInviting(true)
     // Simulate API call
@@ -103,6 +125,8 @@ export default function TeamPage() {
     })
   }
 
+  const filteredTeamMembers = teamMembers.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()) || m.email.toLowerCase().includes(searchTerm.toLowerCase()) || m.role.toLowerCase().includes(searchTerm.toLowerCase()))
+
   const activeMembers = teamMembers.filter(m => m.status === 'active').length
   const pendingInvites = teamMembers.filter(m => m.status === 'pending').length
 
@@ -116,14 +140,6 @@ export default function TeamPage() {
               Manage your team members and their access levels
             </p>
           </div>
-          <Button 
-            onClick={handleInviteMember}
-            disabled={isInviting}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            {isInviting ? 'Sending...' : 'Invite Member'}
-          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -170,12 +186,74 @@ export default function TeamPage() {
 
         {/* Team Members List */}
         <Card>
-          <CardHeader>
-            <CardTitle>Team Members</CardTitle>
+          <CardHeader className="pb-4">
+            <CardTitle>
+              <div className="flex items-center justify-between mb-2">
+                Team Members 
+            
+                <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="default"
+                              size="sm"
+                            >
+                              <UserPlus className="h-4 w-4" />
+                              Invite Member
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogPortal>
+                            <AlertDialogOverlay className="fixed inset-0 bg-black/50" />
+                            <AlertDialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 sm:rounded-lg">
+                              <AlertDialogTitle className="text-lg font-semibold">
+                                Invite Member
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-gray-600">
+                                <div className="mt-1 space-y-4">
+                                <Label htmlFor="email">Email</Label>
+                                <Input className="mt-1" type="email" placeholder="jane@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <Label htmlFor="role">Role</Label>
+                                <Select onValueChange={(value) => setRole(value)}>
+                                  <SelectTrigger className="mt-1">
+                                    <SelectValue placeholder="Select a role" />
+                                  </SelectTrigger>
+                                  <SelectContent className="w-auto">
+                                    <SelectItem value="admin">Admin</SelectItem>
+                                    <SelectItem value="viewer">Viewer</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                </div>
+                              </AlertDialogDescription>
+                              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+                                <AlertDialogCancel asChild>
+                                  <Button variant="outline">Cancel</Button>
+                                </AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                  <Button variant="default" onClick={handleInviteMember} disabled={isInviting}>Invite</Button>
+                                </AlertDialogAction>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialogPortal>
+                        </AlertDialog>
+            
+          </div>
+            </CardTitle>
+            
+          {/* search bar that searches by name, email, or role */}
+          <div className="flex items-center space-x-2">
+            <span className="w-full flex items-center relative">
+              <Input
+                type="text"
+                placeholder="Search by name, email, or role"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="h-4 w-4 text-gray-400 absolute right-4 pointer-events-none" />
+            </span>
+          </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {teamMembers.map((member) => (
+            <div className="space-y-2 ">
+              {filteredTeamMembers.map((member) => (
                 <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -300,6 +378,47 @@ export default function TeamPage() {
                 </ul>
               </div>
             </div>
+          </CardContent>
+        </Card>
+        
+        {/* leave team section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Leave Team</CardTitle>
+          </CardHeader>
+          <CardContent>
+          <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="default"
+                              size="sm"
+                            >
+                              <LogOut className="h-4 w-4" />
+                              Leave Team
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogPortal>
+                            <AlertDialogOverlay className="fixed inset-0 bg-black/50" />
+                            <AlertDialogContent className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 sm:rounded-lg">
+                              <AlertDialogTitle className="text-lg font-semibold">
+                                Leave Team
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-gray-600">
+                                
+                                <Label>Are you sure you want to leave the team?</Label>
+                                <Input type="text" placeholder="Enter your email to confirm" />
+                                </AlertDialogDescription>
+                              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+                                <AlertDialogCancel asChild>
+                                  <Button variant="outline" disabled={isLeaving} onClick={() => setIsLeaving(false)}>Cancel</Button>
+                                </AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                  <Button variant="destructive" onClick={() => handleLeaveTeam()}>Yes</Button>
+                                </AlertDialogAction>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialogPortal>
+                        </AlertDialog>
           </CardContent>
         </Card>
       </div>
