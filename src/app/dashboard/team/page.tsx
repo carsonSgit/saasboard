@@ -27,14 +27,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
 import { ToastDescription } from '@radix-ui/react-toast'
-function init(){
-  document.documentElement.style.scrollbarGutter = 'auto'
-}
 
 export default function TeamPage() {
-  useEffect(() => {
-    init()
-  }, [])
 
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
   const [isInviting, setIsInviting] = useState(false)

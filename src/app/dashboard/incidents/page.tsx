@@ -198,7 +198,7 @@ export default function IncidentsPage() {
             </Card>
           ) : (
             filteredIncidents.map((incident) => (
-              <Card key={incident.id} className="hover:shadow-lg transition-shadow duration-200">
+              <Card key={incident.id} className="hover:outline-1 hover:outline-gray-300">
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">

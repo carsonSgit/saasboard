@@ -47,14 +47,8 @@ const ExportButton = styled(Button)`
   color: ${theme.colors.gray12} !important;
 }`
 
-function init(){
-  document.documentElement.style.scrollbarGutter = 'stable'
-}
 
 export function BillingComponent() {  
-    useEffect(() => {
-        init()
-    }, [])
 
     const [billingData] = useState(mockBillingData)
     const { addToast } = useToast()
@@ -188,13 +182,6 @@ export function BillingComponent() {
         }
     }
 
-    const handleTabChange = (value: string) => {
-        if (value === 'plans' || value === 'overview') {
-          document.documentElement.style.scrollbarGutter = 'stable'
-        } else {
-          document.documentElement.style.scrollbarGutter = 'auto'
-        }
-    }
 
 return (
 <div className="space-y-6">
@@ -215,7 +202,7 @@ return (
         </div>
 
         {/* Tabs Navigation */}
-        <Tabs defaultValue="overview" className="space-y-6" onValueChange={handleTabChange}>
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="billing-settings">Billing Settings</TabsTrigger>
@@ -223,7 +210,7 @@ return (
           </TabsList>
           
           {/* Tab Content Container with consistent scrollbar */}
-          <div className="min-h-[600px] overflow-y-auto pr-2" style={{ scrollbarGutter: 'stable' }}>
+          <div className="min-h-[600px] overflow-y-auto pr-2">
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 pb-6">
@@ -345,9 +332,6 @@ return (
                         </div>
                       </div>
                       <div className="flex items-center space-x-6">
-                        <Badge style={{ backgroundColor: invoice.status === 'Pending' ? theme.colors.yellow5 : invoice.status === 'Failed' ? theme.colors.red5 : theme.colors.green5, color: invoice.status === 'Pending' ? theme.colors.yellow12 : invoice.status === 'Failed' ? theme.colors.red12 : theme.colors.green12 }}>
-                          {invoice.status}
-                        </Badge>
                         <ExportButton
                           size="sm"
                           onClick={() => handleDownloadInvoice(invoice.id)}
