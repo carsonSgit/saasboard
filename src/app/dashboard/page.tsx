@@ -6,10 +6,11 @@ import { MonitorStatus } from '@/components/dashboard/monitor-status'
 import { QuickActions } from '@/components/dashboard/quick-actions'
 import { SystemStatus } from '@/components/dashboard/system-status'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BarChart3, AlertTriangle, Monitor, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { PageHeader } from '@/components/dashboard/page-header'
+import { StatCard } from '@/components/dashboard/stat-card'
+import { BarChart3, AlertTriangle, Monitor, ArrowRight, Download } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { DesignTokens } from '@/lib/design-tokens'
 
 export default function DashboardPage() {
   const rightSidebar = (
@@ -23,74 +24,60 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout rightSidebar={rightSidebar}>
-      <div className="space-y-6">
+      <div className={DesignTokens.spacing.page}>
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-1">
-              Overview of your monitoring data
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Overview of your monitoring data"
+          actions={
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+          }
+        />
 
-        <div className="grid gap-4 md:grid-cols-3">
-            <Card className="transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Monitors</CardTitle>
-                <Monitor className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">5</div>
-                <p className="text-xs text-muted-foreground">
-                  Active monitors
-                </p>
-                  <Link href="/dashboard/monitors">
-                  <div className="flex items-center text-xs text-blue-600 mt-2 hover:text-blue-500">
-                    <span>Manage monitors</span>
-                    <ArrowRight className="h-3 w-3 ml-1" />
-                    </div>
-                  </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Incidents</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">2</div>
-                <p className="text-xs text-muted-foreground">
-                  Active incidents
-                </p>
-                <Link href="/dashboard/incidents">
-                <div className="flex items-center text-xs text-blue-600 mt-2 hover:text-blue-500">
-                    <span>View incidents</span>
-                    <ArrowRight className="h-3 w-3 ml-1" />
-                </div>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Analytics</CardTitle>
-                <BarChart3 className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">99.9%</div>
-                <p className="text-xs text-muted-foreground">
-                  Overall uptime
-                </p>
-                <Link href="/dashboard/analytics">
-                <div className="flex items-center text-xs text-blue-600 mt-2 hover:text-blue-500">
-                    <span>View analytics</span>
-                    <ArrowRight className="h-3 w-3 ml-1" />
-                </div>
-                </Link>
-              </CardContent>
-            </Card>
+        {/* Quick Stats Cards */}
+        <div className={DesignTokens.spacing.statsGrid}>
+          <StatCard
+            icon={Monitor}
+            iconColor="text-blue-500"
+            label="Monitors"
+            value={5}
+            sublabel="Active monitors"
+            actionLink={{
+              href: '/dashboard/monitors',
+              label: 'Manage monitors →'
+            }}
+          />
+          
+          <StatCard
+            icon={AlertTriangle}
+            iconColor="text-red-500"
+            label="Incidents"
+            value={2}
+            sublabel="Active incidents"
+            trend="Requires attention"
+            trendColor="error"
+            actionLink={{
+              href: '/dashboard/incidents',
+              label: 'View incidents →'
+            }}
+          />
+          
+          <StatCard
+            icon={BarChart3}
+            iconColor="text-green-500"
+            label="Overall Uptime"
+            value="99.9%"
+            sublabel="Last 30 days"
+            trend="+0.2% from last month"
+            trendColor="success"
+            actionLink={{
+              href: '/dashboard/analytics',
+              label: 'View analytics →'
+            }}
+          />
         </div>
         {/* KPI Cards */}
         <KPICards />

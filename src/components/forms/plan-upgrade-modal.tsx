@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { green, blue, red, amber, slate, gray, indigo, blackA, mint, yellow, plum } from '@radix-ui/colors'
 import styled from 'styled-components'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipPortal, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
-import { mockBillingData } from '@/lib/mock-data'
+import { mockBillingData } from '@/lib/mocks'
 
 const theme = {
     colors: {
@@ -201,7 +201,7 @@ export function PlanUpgradeModal({ isOpen, onClose, currentPlan, selectedPlan, o
         <div id="plan-upgrade-modal">   
         <Dialog open={isOpen} onOpenChange={onClose} >
                 <DialogOverlay style={{ backgroundColor: theme.colors.blackA7 }} />
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+                <DialogContent className="max-w-6xl max-h-[90vh] p-0">
                     <div className="flex">
                         {/* Left Section - Subscription Summary */}
                         <div className="w-1/2 p-8 bg-gray-50 border-r">

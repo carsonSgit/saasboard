@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { mockBillingData } from '@/lib/mock-data'
+import { mockBillingData } from '@/lib/mocks'
 import { SUBSCRIPTION_TIERS } from '@/lib/subscriptions'
 import { useToast } from '@/components/ui/toast-provider'
 import { 
@@ -21,7 +21,7 @@ import {
   ExternalLink
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import TeamPage from '../team/page'
+import { TeamContent } from '../team/page'
 import BillingComponent from './billing_component'
 
 export default function BillingPage() {
@@ -39,7 +39,7 @@ export default function BillingPage() {
           <BillingComponent />
       </TabsContent>
       <TabsContent value="team-workspace" className="mt-6">
-        <TeamPage />
+        <TeamContent />
       </TabsContent>
       </Tabs>
       </div>

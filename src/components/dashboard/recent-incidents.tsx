@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { mockIncidents, mockMonitors } from '@/lib/mock-data'
+import { mockIncidents, mockMonitors } from '@/lib/mocks'
 import { CheckCircle } from 'lucide-react'
 
 export function RecentIncidents() {

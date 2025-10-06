@@ -1,0 +1,21 @@
+import { NextRequest } from 'next/server'
+import { IncidentService } from '@/services/incidents/incident.service'
+import { getUserFromRequest } from '@/lib/api/auth'
+import { apiResponse, apiError } from '@/lib/api/response'
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const userId = await getUserFromRequest(request)
+    const service = new IncidentService()
+    
+    const incident = await service.resolveIncident(params.id)
+    
+    return apiResponse({ incident })
+  } catch (error) {
+    return apiError(error)
+  }
+}
+

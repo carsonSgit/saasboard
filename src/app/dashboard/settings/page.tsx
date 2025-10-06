@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { mockProfile } from '@/lib/mock-data'
+import { mockProfile } from '@/lib/mocks'
 import { User, Mail, CreditCard, Bell } from 'lucide-react'
 
 export default function SettingsPage() {

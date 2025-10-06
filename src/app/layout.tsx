@@ -28,8 +28,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <a href="#main-content" className="skip-to-main">
+          Skip to main content
+        </a>
         <ToastProvider>
-          {children}
+          <main id="main-content">
+            {children}
+          </main>
         </ToastProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { mockMonitors, mockChecks } from '@/lib/mock-data'
+import { mockMonitors, mockChecks } from '@/lib/mocks'
 import { Monitor, CheckCircle, XCircle, Clock } from 'lucide-react'
 
 export function MonitorStatus() {
